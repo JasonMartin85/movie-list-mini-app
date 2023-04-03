@@ -1,0 +1,49 @@
+---
+version: "3.8"
+
+services:
+  front-end:
+    container_name: frontend
+    build: ./front-end
+    restart: unless-stopped
+    ports: 
+      - 3000:3000
+    depends_on:
+      - back-end
+    volumes:
+      - ./front-end:/front-end
+    
+  back-end:
+    container_name: backend
+    build: ./back-end
+    restart: unless-stopped
+    ports: 
+      - 3001:3001
+    depends_on:
+      - db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_USER_PW: docker
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: movies
+    volumes:
+      - ./back-end:/back-end
+
+  db:
+    container_name: db
+    hostname: movie_db
+    image: postgres
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - movie_db_vol:/var/lib/postgresql/data
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: movies
+
+volumes:
+  movie_db_vol:
